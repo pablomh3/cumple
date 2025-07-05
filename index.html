@@ -16,14 +16,18 @@
       body {
         margin: 0;
         background: linear-gradient(135deg, #fff2e1, #ffa94d);
-        overflow: hidden;
+        overflow-x: hidden;
         font-family: "Arial", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
       }
 
       .happy-birthday-banner {
         text-align: center;
-        margin-top: 50px;
-        font-size: 48px;
+        margin-top: 5vh;
+        font-size: 6vw;
         font-family: "Pacifico", cursive;
         color: #fff;
         text-shadow: 2px 2px 5px #f4801b;
@@ -31,13 +35,12 @@
 
       .candle-count-display {
         text-align: center;
-        margin: 10px auto 20px auto;
-        font-size: 20px;
+        margin: 1vh auto;
+        font-size: 4vw;
         background-color: #fff5f7;
         padding: 10px 20px;
         border-radius: 12px;
         border: 2px solid #f4801b86;
-        width: fit-content;
         color: #eee;
       }
 
@@ -46,24 +49,35 @@
         color: #fc8200;
       }
 
+      .cake-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 4vh 0;
+        width: 100%;
+      }
+
       .cake {
         position: relative;
-        width: 250px;
-        height: 200px;
-        margin: 50px auto;
+        width: 60vw;
+        max-width: 300px;
+        height: 48vw;
+        max-height: 240px;
         z-index: 2;
       }
 
       .plate {
-        width: 270px;
+        width: 108%;
         height: 110px;
         position: absolute;
-        bottom: -10px;
-        left: -10px;
+        bottom: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: -12%;
         background-color: #ccc;
         border-radius: 50%;
-        box-shadow: 0 2px 0 #b3b3b3, 0 4px 0 #b3b3b3,
-          0 5px 40px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 2px 0 #b3b3b3, 0 4px 0 #b3b3;
       }
 
       .layer {
@@ -176,6 +190,12 @@
         display: none;
       }
 
+      .cake-spacing {
+        margin: 1vh auto;
+        padding: 10px 20px;
+        height: 42px; /* mismo alto que tenía el contador antes */
+      }
+
       @keyframes flicker {
         0% {
           transform: skewX(5deg);
@@ -209,14 +229,18 @@
         display: flex;
         justify-content: center;
       }
+
+      .spacing-before-cake {
+        height: 6vh;
+        min-height: 60px;
+      }
     </style>
   </head>
   <body>
     <canvas id="confettiCanvas"></canvas>
     <div class="happy-birthday-banner">Happy Birthday Eddy!</div>
-    <div class="candle-count-display">
-      Number of candles on cake: <span id="candleCount">26</span>
-    </div>
+    <div class="spacing-before-cake"></div>
+
     <div class="cake-container">
       <div class="cake">
         <div class="plate"></div>
@@ -230,7 +254,7 @@
       </div>
     </div>
     <div class="audio-player">
-      <audio controls>
+      <audio id="birthday-audio" controls autoplay>
         <source src="birthday.mp3" type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
@@ -293,6 +317,21 @@
       })();
 
       document.addEventListener("DOMContentLoaded", function () {
+        const birthdayAudio = document.getElementById("birthday-audio");
+
+        // Intentar reproducir al cargar (según política del navegador)
+        document.addEventListener(
+          "click",
+          () => {
+            if (birthdayAudio.paused) {
+              birthdayAudio.play().catch((e) => {
+                console.log("Autoplay bloqueado hasta interacción");
+              });
+            }
+          },
+          { once: true }
+        );
+
         const cake = document.querySelector(".cake");
         const candleCountDisplay = document.getElementById("candleCount");
         let candles = [];
@@ -301,7 +340,7 @@
           const activeCandles = candles.filter(
             (candle) => !candle.classList.contains("out")
           ).length;
-          candleCountDisplay.textContent = activeCandles;
+          //candleCountDisplay.textContent = activeCandles;
         }
 
         function addCandle(left, top) {
@@ -373,7 +412,15 @@
         candles.forEach((candle) => {
           candle.classList.add("out");
         });
-        document.getElementById("candleCount").textContent = 0;
+
+        // Detener la música
+        const birthdayAudio = document.getElementById("birthday-audio");
+        if (!birthdayAudio.paused) {
+          birthdayAudio.pause();
+          birthdayAudio.currentTime = 0; // reiniciar para que vuelva desde el inicio si se vuelve a tocar
+        }
+
+        // document.getElementById("candleCount").textContent = 0;
       }
     </script>
   </body>
